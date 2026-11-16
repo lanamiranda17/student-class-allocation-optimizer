@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
     QScrollArea, QSizePolicy, QStackedWidget, QTableView, QToolButton, QVBoxLayout, QWidget,
 )
 
-from apresentacao import (
+from ..apresentacao import (
     ResultadoInterface, exportar_planilha, formatar_percentual, processar_planilha,
     inconsistencias_editaveis, detalhes_registros_por_linha, revalidar_correcoes,
     processar_planilha_bytes, categoria, relatorio_ocorrencias,
@@ -29,7 +29,7 @@ from apresentacao import (
 )
 
 from .recursos import garantir_manual, caminho_recurso, diretorio_aplicacao
-from relatorio_pdf import IdentificacaoExecucao, exportar_relatorio_pdf
+from ..relatorio_pdf import IdentificacaoExecucao, exportar_relatorio_pdf
 from .tema import (
     AZUL, TURQUESA, TURQUESA_ESCURO, TEXTO, TEXTO_SECUNDARIO,
     FUNDO, BRANCO, BORDA, FUNDO_AZUL, ESTILO, ESPACO, MARGEM_PAINEL,

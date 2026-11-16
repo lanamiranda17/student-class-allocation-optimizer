@@ -3,9 +3,9 @@ from copy import deepcopy
 import json
 import unittest
 
-from apresentacao import texto_diferenca_turmas, texto_variacao_genero
-from dados import Aluno, criar_turmas
-from metricas import calcular_metricas
+from src.apresentacao import texto_diferenca_turmas, texto_variacao_genero
+from src.dados import Aluno, criar_turmas
+from src.metricas import calcular_metricas
 
 
 def analisar(sexos_por_turma, estrutura=None, sem_turma=()):

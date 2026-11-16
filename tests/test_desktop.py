@@ -23,16 +23,16 @@ from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtTest import QSignalSpy, QTest
 from PySide6.QtWidgets import QApplication, QFrame, QProgressBar, QStackedWidget, QWidget
 
-from apresentacao import ResultadoInterface, exportar_planilha, processar_planilha, relatorios_interface
-from ui.recursos import caminho_recurso
-import ensalamento
-from dados import Aluno
-from ui.interface_desktop import (
+from src.apresentacao import ResultadoInterface, exportar_planilha, processar_planilha, relatorios_interface
+from src.ui.recursos import caminho_recurso
+from src import ensalamento
+from src.dados import Aluno
+from src.ui.interface_desktop import (
     Grafico, JanelaPrincipal,
     LARGURA_DASHBOARD_DESKTOP,
 )
-from metricas import calcular_metricas
-from ui.tema import ESPACO_SECOES
+from src.metricas import calcular_metricas
+from src.ui.tema import ESPACO_SECOES
 
 
 def criar_entrada(caminho):
@@ -77,9 +77,9 @@ def criar_entrada_sem_vagas(caminho):
 class PlanilhaTest(unittest.TestCase):
     def _processar_verificando_metricas(self, origem):
         with (
-            patch("ensalamento.resolver", wraps=ensalamento.resolver) as resolver,
-            patch("ensalamento.salvar_resultado_excel", wraps=ensalamento.salvar_resultado_excel) as salvar,
-            patch("apresentacao.calcular_metricas", wraps=calcular_metricas) as calcular,
+            patch("src.ensalamento.resolver", wraps=ensalamento.resolver) as resolver,
+            patch("src.ensalamento.salvar_resultado_excel", wraps=ensalamento.salvar_resultado_excel) as salvar,
+            patch("src.apresentacao.calcular_metricas", wraps=calcular_metricas) as calcular,
         ):
             resultado = processar_planilha(origem)
         resolver.assert_called_once()
@@ -126,7 +126,7 @@ class PlanilhaTest(unittest.TestCase):
             self.assertIn("NOMES DUPLICADOS", resultado.relatorio())
             self.assertIn("Linha(s) 6", resultado.relatorio())
             destino = Path(pasta) / "saida.xlsx"
-            with patch("ensalamento.resolver", side_effect=AssertionError("Não recalcular na exportação")):
+            with patch("src.ensalamento.resolver", side_effect=AssertionError("Não recalcular na exportação")):
                 exportar_planilha(resultado, destino)
             self.assertEqual(destino.read_bytes(), resultado.planilha)
             livro = load_workbook(destino)
@@ -165,7 +165,7 @@ class PlanilhaTest(unittest.TestCase):
             self.assertIn("ALUNOS SEM TURMA (12)", resultado.relatorio())
 
             destino = Path(pasta) / "saida.xlsx"
-            with patch("ensalamento.resolver", side_effect=AssertionError("Não recalcular na exportação")):
+            with patch("src.ensalamento.resolver", side_effect=AssertionError("Não recalcular na exportação")):
                 exportar_planilha(resultado, destino)
             self.assertEqual(destino.read_bytes(), resultado.planilha)
             self.assertEqual(origem.read_bytes(), antes)
@@ -189,7 +189,7 @@ class PlanilhaTest(unittest.TestCase):
             origem = Path(pasta) / "entrada.xlsx"
             criar_entrada(origem)
             antes = origem.read_bytes()
-            with patch("ensalamento.executar_com_resultado", side_effect=ValueError("Solução não ótima")):
+            with patch("src.ensalamento.executar_com_resultado", side_effect=ValueError("Solução não ótima")):
                 with self.assertRaisesRegex(ValueError, "não ótima"):
                     processar_planilha(origem)
             self.assertEqual(origem.read_bytes(), antes)
@@ -200,8 +200,8 @@ class PlanilhaTest(unittest.TestCase):
             criar_entrada(origem)
             antes = origem.read_bytes()
             with (
-                patch("ensalamento.resolver", wraps=ensalamento.resolver) as resolver,
-                patch("apresentacao.calcular_metricas", side_effect=AssertionError("Métricas são da apresentação")),
+                patch("src.ensalamento.resolver", wraps=ensalamento.resolver) as resolver,
+                patch("src.apresentacao.calcular_metricas", side_effect=AssertionError("Métricas são da apresentação")),
             ):
                 resumo = ensalamento.executar(origem)
             resolver.assert_called_once()
@@ -224,7 +224,7 @@ class PlanilhaTest(unittest.TestCase):
             destino = Path(pasta) / "saida.xlsx"
             destino.write_bytes(b"original")
             resultado = amostra()
-            with patch("apresentacao.os.replace", side_effect=PermissionError):
+            with patch("src.apresentacao.os.replace", side_effect=PermissionError):
                 with self.assertRaisesRegex(PermissionError, "Feche a planilha"):
                     exportar_planilha(resultado, destino)
             self.assertEqual(destino.read_bytes(), b"original")
@@ -371,7 +371,7 @@ class InterfaceTest(unittest.TestCase):
         dados_antes = [dict(g.dados) for g in graficos]
         conexoes = [g.receivers("2turma_clicada(QString)") for g in graficos]
         quantidade_widgets = len(w.findChildren(QWidget))
-        with patch("ensalamento.resolver", side_effect=AssertionError("Resize não resolve a instância")):
+        with patch("src.ensalamento.resolver", side_effect=AssertionError("Resize não resolve a instância")):
             for _ in range(3):
                 for largura in (LARGURA_DASHBOARD_DESKTOP - 100, LARGURA_DASHBOARD_DESKTOP + 80):
                     w.resize(largura, 880)
@@ -950,7 +950,7 @@ class InterfaceTest(unittest.TestCase):
             livro.close()
             original = origem.read_bytes()
             w.definir_arquivo(origem)
-            with patch("ensalamento.resolver") as resolver:
+            with patch("src.ensalamento.resolver") as resolver:
                 w.gerar_distribuicao()
                 limite = time.monotonic() + 3
                 while w._ocupado and time.monotonic() < limite:

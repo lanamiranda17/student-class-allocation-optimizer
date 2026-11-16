@@ -6,10 +6,10 @@ import unittest
 
 from openpyxl import Workbook, load_workbook
 
-from apresentacao import processar_planilha
-from dados import criar_turmas, letras_turma
-from ensalamento import ler_alunos, ler_estrutura
-from metricas import calcular_metricas
+from src.apresentacao import processar_planilha
+from src.dados import criar_turmas, letras_turma
+from src.ensalamento import ler_alunos, ler_estrutura
+from src.metricas import calcular_metricas
 import pandas as pd
 
 

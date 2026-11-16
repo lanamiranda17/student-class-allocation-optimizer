@@ -5,10 +5,10 @@ on:
     branches: [main]
     paths:
       - "*.py"
-      - "*.spec"
+      - "src/**"
+      - "build/**"
       - "*.txt"
-      - "*.html"
-      - "ui/**"
+      - "docs/**"
       - "assets/**"
       - ".gitattributes"
       - ".github/workflows/build-windows-exe.yml"
@@ -40,11 +40,11 @@ jobs:
         run: python -m playwright install chromium --only-shell
 
       - name: Build executable
-        run: python -m PyInstaller --noconfirm ABC_Aprendiz.spec
+        run: python -m PyInstaller --noconfirm build/ABC_Aprendiz.spec
 
-      - name: Copy executable to repository root
+      - name: Copy executable to distribution outputs
         shell: pwsh
-        run: Copy-Item dist/ABC_Aprendiz.exe ABC_Aprendiz.exe -Force
+        run: Copy-Item dist/ABC_Aprendiz.exe outputs/ABC_Aprendiz.exe -Force
 
       - name: Commit executable to main
         shell: pwsh
@@ -52,7 +52,7 @@ jobs:
           git lfs install
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ABC_Aprendiz.exe
+          git add outputs/ABC_Aprendiz.exe
           git diff --cached --quiet
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Executable is already up to date."

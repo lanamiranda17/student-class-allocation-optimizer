@@ -4,18 +4,21 @@ from pathlib import Path
 import subprocess
 import sys
 
+ROOT = Path(SPECPATH).parent
+
 # Falhar antes do empacotamento se o HTML não puder ser convertido.
 # Processo separado: Playwright/Chromium são ferramentas apenas de build.
-manual = Path(SPECPATH) / 'Manual_do_Usuario_ABC_Aprendiz.pdf'
+manual = ROOT / 'outputs' / 'pdf' / 'Manual_do_Usuario_ABC_Aprendiz.pdf'
 subprocess.run([sys.executable, str(Path(SPECPATH) / 'gerar_manual.py'),
+                '--html', str(ROOT / 'docs' / 'manual_usuario.html'),
                 '--destino', str(manual)], check=True)
 
 a = Analysis(
-    ['ensalamento.py'],
-    pathex=[SPECPATH],
+    [str(ROOT / 'main.py')],
+    pathex=[str(ROOT)],
     binaries=[],
     datas=collect_data_files('pulp', includes=['solverdir/cbc/win/i64/*'])
-          + [(str(Path(SPECPATH) / 'assets'), 'assets'), (str(manual), '.')],
+          + [(str(ROOT / 'assets'), 'assets'), (str(manual), '.')],
     hiddenimports=['openpyxl', 'PySide6.QtCore', 'PySide6.QtGui', 'PySide6.QtWidgets',
                    'PySide6.QtSvg', 'PySide6.QtSvgWidgets'],
     hookspath=[], hooksconfig={}, runtime_hooks=[],

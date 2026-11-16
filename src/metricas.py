@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from dados import Aluno, TURNOS, criar_turmas
+from .dados import Aluno, TURNOS, criar_turmas
 
 
 def _percentual(parte: int, total: int) -> float:

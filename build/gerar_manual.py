@@ -4,9 +4,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import sys
 
-from ui.recursos import NOME_MANUAL
+from src.ui.recursos import NOME_MANUAL
 
-RAIZ = Path(__file__).resolve().parent
+RAIZ = Path(__file__).resolve().parents[1]
 
 
 def gerar_manual(html: Path, destino: Path) -> Path:
@@ -46,8 +46,8 @@ def gerar_manual(html: Path, destino: Path) -> Path:
 
 def main() -> int:
     parser = ArgumentParser(description=__doc__)
-    parser.add_argument("--html", type=Path, default=RAIZ / "manual_usuario.html")
-    parser.add_argument("--destino", type=Path, default=RAIZ / NOME_MANUAL)
+    parser.add_argument("--html", type=Path, default=RAIZ / "docs" / "manual_usuario.html")
+    parser.add_argument("--destino", type=Path, default=RAIZ / "outputs" / "pdf" / NOME_MANUAL)
     args = parser.parse_args()
     try:
         destino = gerar_manual(args.html, args.destino)

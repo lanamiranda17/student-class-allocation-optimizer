@@ -10,7 +10,7 @@ def diretorio_aplicacao() -> Path:
     """Raiz do projeto ou pasta que contém o executável empacotado."""
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
-    return Path(__file__).resolve().parent.parent
+    return Path(__file__).resolve().parents[2]
 
 
 def caminho_recurso(*partes: str) -> Path:

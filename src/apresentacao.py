@@ -14,9 +14,9 @@ from zipfile import BadZipFile
 import pandas as pd
 from openpyxl import load_workbook
 
-import ensalamento
-from dados import criar_turmas
-from metricas import calcular_metricas
+from . import ensalamento
+from .dados import criar_turmas
+from .metricas import calcular_metricas
 
 
 def formatar_percentual(valor: float) -> str:

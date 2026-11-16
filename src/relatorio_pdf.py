@@ -16,12 +16,12 @@ from PySide6.QtGui import (
     QTextFrameFormat, QTextImageFormat, QTextLength, QTextOption, QTextTableFormat,
 )
 
-from apresentacao import (
+from .apresentacao import (
     ResultadoInterface, formatar_percentual, nome_turma_visual, separar_ocorrencias,
     texto_diferenca_turmas, texto_variacao_genero,
 )
-from ui.recursos import caminho_recurso
-from ui.tema import (
+from .ui.recursos import caminho_recurso
+from .ui.tema import (
     ALERTA, AZUL, BORDA, BRANCO, FUNDO, FUNDO_ALERTA, FUNDO_AZUL,
     TEXTO, TEXTO_SECUNDARIO, TURQUESA, TURQUESA_ESCURO, VERDE, fonte_interface,
 )

@@ -1,6 +1,6 @@
 @echo off
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0.."
 set "PYTHON_BUILD_ARGS="
 if exist "%~dp0.venv-ui\Scripts\python.exe" (
     set "PYTHON_BUILD=%~dp0.venv-ui\Scripts\python.exe"
@@ -16,7 +16,7 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-"%PYTHON_BUILD%" %PYTHON_BUILD_ARGS% -m PyInstaller --noconfirm ABC_Aprendiz.spec
+"%PYTHON_BUILD%" %PYTHON_BUILD_ARGS% -m PyInstaller --noconfirm build\ABC_Aprendiz.spec
 if errorlevel 1 (
     echo Falha ao gerar o executavel. Instale requirements-dev.txt e tente novamente.
     pause

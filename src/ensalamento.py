@@ -14,7 +14,7 @@ import pandas as pd
 import pulp
 from openpyxl import load_workbook
 
-from dados import Aluno, criar_turmas
+from .dados import Aluno, criar_turmas
 
 
 ABAS = {"alunos": "Alunos", "turmas": "Turmas", "saida": "Ensalamento", "erros": "Inconsistências"}
@@ -315,26 +315,6 @@ def executar(arquivo: Path) -> str:
 
 
 def interface() -> None:
-    from ui.interface_desktop import iniciar
+    from .ui.interface_desktop import iniciar
 
     iniciar()
-
-
-if __name__ == "__main__":
-    multiprocessing.freeze_support()
-    if len(sys.argv) > 1:
-        try:
-            from ui.recursos import diretorio_aplicacao
-
-            entrada = Path(sys.argv[1]).expanduser().resolve()
-            pasta_saida = diretorio_aplicacao() / "outputs" / "xlsx"
-            pasta_saida.mkdir(parents=True, exist_ok=True)
-            destino = pasta_saida / f"{entrada.stem}_ensalamento.xlsx"
-            shutil.copy2(entrada, destino)
-            print(executar(destino))
-            print(f"Arquivo gerado: {destino}")
-        except Exception as exc:
-            print(f"Erro: {exc}", file=sys.stderr)
-            raise SystemExit(1)
-    else:
-        interface()

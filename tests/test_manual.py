@@ -12,8 +12,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 
-from ui.interface_desktop import JanelaPrincipal
-from ui.recursos import NOME_MANUAL, caminho_manual, garantir_manual
+from src.ui.interface_desktop import JanelaPrincipal
+from src.ui.recursos import NOME_MANUAL, caminho_manual, garantir_manual
 
 
 class CaminhoManualTest(unittest.TestCase):
@@ -54,8 +54,8 @@ class GarantirManualTest(unittest.TestCase):
 
     def preparar(self):
         return (
-            patch("ui.recursos.caminho_manual", return_value=self.destino),
-            patch("ui.recursos.caminho_recurso", return_value=self.origem),
+            patch("src.ui.recursos.caminho_manual", return_value=self.destino),
+            patch("src.ui.recursos.caminho_recurso", return_value=self.origem),
         )
 
     def test_copia_pdf_embutido_quando_esta_ausente(self):
@@ -69,24 +69,24 @@ class GarantirManualTest(unittest.TestCase):
         original = b"%PDF-1.4\ncopia existente"
         self.destino.write_bytes(original)
         modificacao = self.destino.stat().st_mtime_ns
-        with patch("ui.recursos.caminho_manual", return_value=self.destino), \
-             patch("ui.recursos.caminho_recurso") as recurso:
+        with patch("src.ui.recursos.caminho_manual", return_value=self.destino), \
+             patch("src.ui.recursos.caminho_recurso") as recurso:
             resultado = garantir_manual()
             recurso.assert_not_called()
         self.assertEqual(resultado.read_bytes(), original)
         self.assertEqual(resultado.stat().st_mtime_ns, modificacao)
 
     def test_recurso_ausente_nao_cria_pdf_vazio(self):
-        with patch("ui.recursos.caminho_manual", return_value=self.destino), \
-             patch("ui.recursos.caminho_recurso", return_value=self.raiz / "inexistente.pdf"):
+        with patch("src.ui.recursos.caminho_manual", return_value=self.destino), \
+             patch("src.ui.recursos.caminho_recurso", return_value=self.raiz / "inexistente.pdf"):
             with self.assertRaises(FileNotFoundError):
                 garantir_manual()
         self.assertFalse(self.destino.exists())
 
     def test_falha_na_copia_remove_arquivo_parcial(self):
-        with patch("ui.recursos.caminho_manual", return_value=self.destino), \
-             patch("ui.recursos.caminho_recurso", return_value=self.origem), \
-             patch("ui.recursos.shutil.copyfileobj", side_effect=OSError("falha simulada")):
+        with patch("src.ui.recursos.caminho_manual", return_value=self.destino), \
+             patch("src.ui.recursos.caminho_recurso", return_value=self.origem), \
+             patch("src.ui.recursos.shutil.copyfileobj", side_effect=OSError("falha simulada")):
             with self.assertRaises(OSError):
                 garantir_manual()
         self.assertFalse(self.destino.exists())
@@ -115,10 +115,10 @@ class AcessoManualTest(unittest.TestCase):
         original = self.pdf.read_bytes()
         modificacao = self.pdf.stat().st_mtime_ns
         with (
-            patch("ui.interface_desktop.garantir_manual", return_value=self.pdf),
+            patch("src.ui.interface_desktop.garantir_manual", return_value=self.pdf),
             patch.object(sys, "platform", "win32"),
-            patch("ui.interface_desktop.os.startfile", create=True) as abrir,
-            patch("ui.interface_desktop.QMessageBox.warning") as aviso,
+            patch("src.ui.interface_desktop.os.startfile", create=True) as abrir,
+            patch("src.ui.interface_desktop.QMessageBox.warning") as aviso,
         ):
             QTest.mouseClick(self.janela.manual, Qt.MouseButton.LeftButton)
             abrir.assert_called_once_with(str(self.pdf))
@@ -128,10 +128,10 @@ class AcessoManualTest(unittest.TestCase):
 
     def test_recurso_ausente_exibe_aviso_e_nao_tenta_abrir(self):
         with (
-            patch("ui.interface_desktop.garantir_manual", side_effect=FileNotFoundError),
-            patch("ui.interface_desktop.os.startfile", create=True) as abrir,
-            patch("ui.interface_desktop.QDesktopServices.openUrl") as abrir_url,
-            patch("ui.interface_desktop.QMessageBox.warning") as aviso,
+            patch("src.ui.interface_desktop.garantir_manual", side_effect=FileNotFoundError),
+            patch("src.ui.interface_desktop.os.startfile", create=True) as abrir,
+            patch("src.ui.interface_desktop.QDesktopServices.openUrl") as abrir_url,
+            patch("src.ui.interface_desktop.QMessageBox.warning") as aviso,
         ):
             self.janela.manual.click()
             abrir.assert_not_called()
@@ -143,9 +143,9 @@ class AcessoManualTest(unittest.TestCase):
 
     def test_falha_ao_criar_copia_pede_permissao_de_gravacao(self):
         with (
-            patch("ui.interface_desktop.garantir_manual", side_effect=PermissionError),
-            patch("ui.interface_desktop.os.startfile", create=True) as abrir,
-            patch("ui.interface_desktop.QMessageBox.warning") as aviso,
+            patch("src.ui.interface_desktop.garantir_manual", side_effect=PermissionError),
+            patch("src.ui.interface_desktop.os.startfile", create=True) as abrir,
+            patch("src.ui.interface_desktop.QMessageBox.warning") as aviso,
         ):
             self.janela.manual.click()
             abrir.assert_not_called()
@@ -157,11 +157,11 @@ class AcessoManualTest(unittest.TestCase):
     def test_falha_no_windows_nao_expoe_detalhes_tecnicos(self):
         self.pdf.touch()
         with (
-            patch("ui.interface_desktop.garantir_manual", return_value=self.pdf),
+            patch("src.ui.interface_desktop.garantir_manual", return_value=self.pdf),
             patch.object(sys, "platform", "win32"),
-            patch("ui.interface_desktop.os.startfile", create=True,
+            patch("src.ui.interface_desktop.os.startfile", create=True,
                   side_effect=OSError("Detalhe técnico da associação de arquivos")),
-            patch("ui.interface_desktop.QMessageBox.warning") as aviso,
+            patch("src.ui.interface_desktop.QMessageBox.warning") as aviso,
         ):
             self.janela.manual.click()
             aviso.assert_called_once_with(
@@ -172,10 +172,10 @@ class AcessoManualTest(unittest.TestCase):
     def test_abertura_em_outros_sistemas_e_retorno_de_falha(self):
         self.pdf.touch()
         with (
-            patch("ui.interface_desktop.garantir_manual", return_value=self.pdf),
+            patch("src.ui.interface_desktop.garantir_manual", return_value=self.pdf),
             patch.object(sys, "platform", "linux"),
-            patch("ui.interface_desktop.QDesktopServices.openUrl", return_value=True) as abrir,
-            patch("ui.interface_desktop.QMessageBox.warning") as aviso,
+            patch("src.ui.interface_desktop.QDesktopServices.openUrl", return_value=True) as abrir,
+            patch("src.ui.interface_desktop.QMessageBox.warning") as aviso,
         ):
             self.janela.manual.click()
             self.assertEqual(Path(abrir.call_args.args[0].toLocalFile()), self.pdf)

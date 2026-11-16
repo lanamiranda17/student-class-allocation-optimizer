@@ -2,6 +2,10 @@
 
 Aplicativo desktop que distribui alunos em turmas de manhã e à tarde, respeitando a disponibilidade e a capacidade de cada turma. A distribuição também busca equilibrar a quantidade de alunos e alunas entre as turmas.
 
+> Projeto desenvolvido em equipe durante o **Desafio UniSoma 2026**, em um hackathon de aproximadamente 30 horas, para solucionar um [problema real de ensalamento](docs/Contexto/Modelo%20Conceitual%20Desafio%202026.pdf) da **ABC Aprendiz**. A solução integra otimização matemática, interface desktop e geração de relatórios, com apoio de **IA generativa para acelerar o desenvolvimento**.
+>
+> Este repositório é um fork do [projeto original](https://github.com/ArthurDp78/Desafio_Unisoma), reorganizado para facilitar a manutenção e apresentação, preservando a modelagem matemática e código.
+
 ![Painel principal do ABC Aprendiz](assets/manual/06_dashboard_120_alunos.png)
 
 ## ⬇️ Baixar o executável para Windows
@@ -28,7 +32,7 @@ Se não houver vagas suficientes, o programa identifica os alunos que ficaram se
 4. Clique em **Gerar distribuição**.
 5. Confira os resultados e use **Exportar XLSX** ou **Exportar relatório PDF**.
 
-O botão **Manual do usuário** abre o guia completo. Uma versão do manual também está disponível em [`outputs/pdf/manual_usuario.pdf`](outputs/pdf/manual_usuario.pdf).
+O botão **Manual do usuário** abre o guia completo. O HTML-fonte está em [`docs/manual_usuario.html`](docs/manual_usuario.html), e uma versão PDF está disponível em [`outputs/pdf/manual_usuario.pdf`](outputs/pdf/manual_usuario.pdf).
 
 ## Preparar a planilha de entrada
 
@@ -71,15 +75,15 @@ Para executar a aplicação a partir do código, use Windows e Python **3.12.9**
 py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pip install --upgrade pip
 .venv\Scripts\python.exe -m pip install -r requirements.txt
-.venv\Scripts\python.exe ensalamento.py
+.venv\Scripts\python.exe main.py
 ```
 
-Também é possível abrir `executar.bat`. Se as dependências já estiverem instaladas, o script inicia o executável compilado quando ele existe; caso contrário, tenta iniciar o programa com o ambiente Python disponível.
+Também é possível abrir [`build/executar.bat`](build/executar.bat). Se as dependências já estiverem instaladas, o script inicia o executável compilado quando ele existe; caso contrário, tenta iniciar o programa com o ambiente Python disponível.
 
 Para usar uma planilha específica pelo terminal:
 
 ```powershell
-.venv\Scripts\python.exe ensalamento.py "C:\caminho\para\instancia.xlsx"
+.venv\Scripts\python.exe main.py "C:\caminho\para\instancia.xlsx"
 ```
 
 <a id="criar-executavel-do-windows"></a>
@@ -90,16 +94,16 @@ Na pasta do projeto, instale as dependências de compilação e gere o pacote:
 ```powershell
 .venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .venv\Scripts\python.exe -m playwright install chromium --only-shell
-.venv\Scripts\python.exe -m PyInstaller --noconfirm ABC_Aprendiz.spec
+.venv\Scripts\python.exe -m PyInstaller --noconfirm build\ABC_Aprendiz.spec
 ```
 
-Ou, depois de instalar `requirements-dev.txt`, abra `gerar_executavel.bat`. O arquivo pronto será criado em:
+Ou, depois de instalar `requirements-dev.txt`, abra [`build/gerar_executavel.bat`](build/gerar_executavel.bat). O arquivo pronto será criado em:
 
 ```text
 dist/ABC_Aprendiz.exe
 ```
 
-O executável deve ser compilado no Windows. O workflow do GitHub Actions faz isso após alterações na branch `main` e grava o resultado como `ABC_Aprendiz.exe` na raiz do repositório. Esse arquivo usa Git LFS para permitir o armazenamento de binários grandes. O build atual não tem assinatura digital, então o Windows pode mostrar um aviso de editor desconhecido.
+O executável deve ser compilado no Windows. O workflow do GitHub Actions faz isso após alterações na branch `main` e grava o resultado como artefato de distribuição. Esse arquivo usa Git LFS para permitir o armazenamento de binários grandes. O build atual não tem assinatura digital, então o Windows pode mostrar um aviso de editor desconhecido.
 
 ## Tecnologias
 
@@ -120,12 +124,12 @@ Com as dependências instaladas, execute:
 
 ```text
 assets/        imagens, ícones e capturas do manual
-Contexto/      documentos do desafio
-Dados/         planilhas de exemplo
-ui/            interface e recursos visuais
+build/         scripts e configuração do PyInstaller
+docs/Contexto/ documentos oficiais do desafio
+docs/          manual HTML e documentos oficiais
+Dados/         planilhas de exemplo e validação
+src/           código da aplicação, solver e interface
 tests/         testes automatizados
-ensalamento.py leitura, validação, modelo e exportação
-apresentacao.py adaptação dos resultados para a interface
-relatorio_pdf.py geração do relatório em PDF
+main.py        ponto de entrada da aplicação
 README.md      instruções do projeto
 ```

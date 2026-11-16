@@ -13,9 +13,9 @@ from PySide6.QtGui import QFontDatabase
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication
 
-from apresentacao import processar_planilha
-from ui.interface_desktop import JanelaPrincipal, LARGURA_DASHBOARD_DESKTOP
-from ui.tema import fonte_interface
+from src.apresentacao import processar_planilha
+from src.ui.interface_desktop import JanelaPrincipal, LARGURA_DASHBOARD_DESKTOP
+from src.ui.tema import fonte_interface
 
 
 def main():

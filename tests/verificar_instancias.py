@@ -14,7 +14,7 @@ from openpyxl import load_workbook
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ))
-from apresentacao import processar_planilha
+from src.apresentacao import processar_planilha
 
 
 def main():
